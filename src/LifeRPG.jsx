@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import silhouette from "../silhouette.png"; // 실루엣 이미지 경로
+import { motion } from "framer-motion";
 
 export default function LifeRPG() {
   const [tasks, setTasks] = useState([]);
@@ -20,9 +20,9 @@ export default function LifeRPG() {
     equipment: {
       helmet: null,
       armor: null,
-      weapon: null,
-      boots: null,
       gloves: null,
+      boots: null,
+      weapon: null,
       shield: null,
       ring: null,
       cloak: null,
@@ -31,101 +31,71 @@ export default function LifeRPG() {
     },
   });
 
-  const addTask = () => {
-    if (taskInput.trim() === "") return;
-    const xpGain = 10 + Math.floor(Math.random() * 10);
-    const goldGain = 5 + Math.floor(Math.random() * 5);
-    const newTask = {
-      description: taskInput,
-      xp: xpGain,
-      gold: goldGain,
-    };
-    setTasks([...tasks, newTask]);
-    setPlayer((prev) => ({
-      ...prev,
-      xp: prev.xp + xpGain,
-      gold: prev.gold + goldGain,
-    }));
-    setTaskInput("");
+  const equipmentSlotPosition = {
+    helmet: { top: "5%", left: "38%" },
+    armor: { top: "35%", left: "38%" },
+    gloves: { top: "35%", left: "10%" },
+    boots: { top: "70%", left: "38%" },
+    weapon: { top: "22%", left: "10%" },
+    shield: { top: "22%", left: "66%" },
+    ring: { top: "60%", left: "10%" },
+    cloak: { top: "5%", left: "66%" },
+    belt: { top: "60%", left: "66%" },
+    accessory: { top: "22%", left: "38%" },
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-4">🧙‍♂️ 인생 RPG</h1>
-      <p className="text-lg mb-6">현실 할 일을 게임처럼!</p>
 
-      {/* 할 일 입력 */}
-      <div className="flex gap-2 mb-6">
-        <Input
-          value={taskInput}
-          onChange={(e) => setTaskInput(e.target.value)}
-          placeholder="예: 집 청소하기, 이메일 보내기 등"
+      <div className="relative w-[300px] h-[500px] mx-auto mt-10 mb-6">
+        <img
+          src="/silhouette.png"
+          alt="캐릭터 실루엣"
+          className="absolute top-0 left-0 w-full h-full opacity-30"
         />
-        <Button onClick={addTask}>추가</Button>
-      </div>
 
-      {/* 할 일 목록 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {tasks.map((task, index) => (
-          <Card key={index}>
-            <CardContent className="p-4">
-              <p className="font-medium">{task.description}</p>
-              <p className="text-sm text-gray-500">
-                +{task.xp} XP / +{task.gold} 골드
-              </p>
-            </CardContent>
-          </Card>
+        {Object.keys(player.equipment).map((slot) => (
+          <div
+            key={slot}
+            className="absolute w-12 h-12 border-2 border-white bg-black/50 text-white text-[10px] flex items-center justify-center rounded"
+            style={{
+              top: equipmentSlotPosition[slot].top,
+              left: equipmentSlotPosition[slot].left,
+            }}
+          >
+            {player.equipment[slot] ? player.equipment[slot].name : slot}
+          </div>
         ))}
       </div>
 
-      {/* 장비창 UI */}
-      <div className="flex flex-col md:flex-row gap-6 items-center justify-center">
-        <div className="relative w-64 h-96">
-          <img
-            src={silhouette}
-            alt="character silhouette"
-            className="w-full h-full object-contain opacity-20"
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold">📝 할 일 추가</h2>
+        <div className="flex gap-2 mt-2">
+          <Input
+            value={taskInput}
+            onChange={(e) => setTaskInput(e.target.value)}
+            placeholder="할 일을 입력하세요"
           />
-          {Object.entries(player.equipment).map(([slot, item], index) => (
-            <div
-              key={slot}
-              className="absolute bg-white/30 border border-white rounded p-1 text-xs text-center text-black"
-              style={{
-                top: equipmentSlotPosition[slot].top,
-                left: equipmentSlotPosition[slot].left,
-                width: "80px",
-              }}
-            >
-              {slot.toUpperCase()}
-              <div className="text-[10px]">{item || "비어있음"}</div>
-            </div>
+          <Button
+            onClick={() => {
+              if (taskInput.trim()) {
+                setTasks([...tasks, taskInput]);
+                setTaskInput("");
+              }
+            }}
+          >
+            추가
+          </Button>
+        </div>
+        <ul className="mt-4 space-y-2">
+          {tasks.map((task, index) => (
+            <li key={index} className="bg-gray-100 p-2 rounded shadow">
+              {task}
+            </li>
           ))}
-        </div>
-
-        {/* 플레이어 정보 */}
-        <div className="space-y-2">
-          <p>🎖 레벨: {player.level}</p>
-          <p>📊 경험치: {player.xp}</p>
-          <p>💰 골드: {player.gold}</p>
-          <p>💪 힘: {player.stats.strength}</p>
-          <p>🧠 지능: {player.stats.intelligence}</p>
-          <p>🍀 운: {player.stats.luck}</p>
-        </div>
+        </ul>
       </div>
     </div>
   );
 }
-
-// 장비 슬롯 위치 지정 (절대 좌표, 이미지에 맞춰 조절)
-const equipmentSlotPosition = {
-  helmet: { top: "5%", left: "38%" },
-  armor: { top: "30%", left: "38%" },
-  weapon: { top: "45%", left: "10%" },
-  shield: { top: "45%", left: "66%" },
-  gloves: { top: "37%", left: "10%" },
-  boots: { top: "80%", left: "38%" },
-  ring: { top: "15%", left: "66%" },
-  cloak: { top: "10%", left: "10%" },
-  belt: { top: "55%", left: "38%" },
-  accessory: { top: "22%", left: "66%" },
-};
