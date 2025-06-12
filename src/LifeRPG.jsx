@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './index.css';
 
 function LifeRPG() {
   const [tasks, setTasks] = useState([]);
@@ -95,50 +96,56 @@ function LifeRPG() {
   };
 
   return (
-    <div style={{ maxWidth: 800, margin: '0 auto' }}>
-      <h1>🧙 인생 RPG</h1>
-      <p>레벨: {level} | XP: {xp} | 💰 Gold: {gold}</p>
-
-      <div>
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+      <div style={{ marginRight: '2rem' }}>
+        <h2>📋 할 일</h2>
         <input
           value={taskInput}
           onChange={(e) => setTaskInput(e.target.value)}
           placeholder="할 일 입력"
         />
         <button onClick={handleAddTask}>추가</button>
+        <ul>
+          {tasks.map((task, i) => (
+            <li key={i}>
+              {task.text} {task.completed ? '✅' : <button onClick={() => handleComplete(i)}>완료</button>}
+            </li>
+          ))}
+        </ul>
+
+        <h2>🎒 인벤토리</h2>
+        <ul>
+          {inventory.map((item, i) => (
+            <li key={i}>
+              <span style={{ color: rarityColors[item.rarity] }}>{item.name}</span>
+              <button onClick={() => handleEquip(item)}>장착</button>
+              <button onClick={() => handleSell(item)}>판매</button>
+            </li>
+          ))}
+        </ul>
+
+        <h2>☕ 휴식</h2>
+        <button onClick={() => handleRestPurchase('유튜브 시청')}>유튜브 30분</button>
+        <button onClick={() => handleRestPurchase('게임 플레이')}>게임 30분</button>
       </div>
 
-      <ul>
-        {tasks.map((task, i) => (
-          <li key={i}>
-            {task.text} {task.completed ? '✅' : <button onClick={() => handleComplete(i)}>완료</button>}
-          </li>
-        ))}
-      </ul>
+      <div>
+        <h2>🧍 장비창</h2>
+        <div style={{ position: 'relative', width: '200px', height: '400px', backgroundColor: '#eee', borderRadius: '10px' }}>
+          <div style={{ position: 'absolute', top: '10px', left: '80px' }}>{equipment.helmet?.name || '🪖'}</div>
+          <div style={{ position: 'absolute', top: '60px', left: '80px' }}>{equipment.armor?.name || '👕'}</div>
+          <div style={{ position: 'absolute', top: '60px', left: '10px' }}>{equipment.weapon?.name || '🗡'}</div>
+          <div style={{ position: 'absolute', top: '60px', right: '10px' }}>{equipment.shield?.name || '🛡'}</div>
+          <div style={{ position: 'absolute', top: '120px', left: '80px' }}>{equipment.belt?.name || '🧷'}</div>
+          <div style={{ position: 'absolute', top: '170px', left: '80px' }}>{equipment.boots?.name || '👞'}</div>
+          <div style={{ position: 'absolute', top: '120px', left: '10px' }}>{equipment.ring?.name || '💍'}</div>
+          <div style={{ position: 'absolute', top: '120px', right: '10px' }}>{equipment.necklace?.name || '📿'}</div>
+          <div style={{ position: 'absolute', top: '220px', left: '10px' }}>{equipment.gloves?.name || '🧤'}</div>
+          <div style={{ position: 'absolute', top: '220px', right: '10px' }}>{equipment.cloak?.name || '🧥'}</div>
+        </div>
 
-      <h2>🎒 인벤토리</h2>
-      <ul>
-        {inventory.map((item, i) => (
-          <li key={i}>
-            <span style={{ color: rarityColors[item.rarity] }}>{item.name}</span>
-            <button onClick={() => handleEquip(item)}>장착</button>
-            <button onClick={() => handleSell(item)}>판매</button>
-          </li>
-        ))}
-      </ul>
-
-      <h2>🛡 장비창</h2>
-      <ul>
-        {Object.entries(equipment).map(([part, item]) => (
-          <li key={part}>
-            {part}: <span style={{ color: item ? rarityColors[item.rarity] : 'gray' }}>{item ? item.name : '없음'}</span>
-          </li>
-        ))}
-      </ul>
-
-      <h2>☕ 휴식 구매</h2>
-      <button onClick={() => handleRestPurchase('유튜브 시청')}>유튜브 시청 30분 (30골드)</button>
-      <button onClick={() => handleRestPurchase('게임 플레이')}>게임 30분 (30골드)</button>
+        <div style={{ marginTop: '1rem' }}>레벨 {level} | 💰 {gold}골드</div>
+      </div>
     </div>
   );
 }
