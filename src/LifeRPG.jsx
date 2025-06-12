@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import './index.css';
-import silhouette from './silhouette.png'; // silhouette image
 
 function LifeRPG() {
   const [tasks, setTasks] = useState([]);
@@ -132,36 +131,19 @@ function LifeRPG() {
 
       <div>
         <h2>🧍 장비창</h2>
-        <div style={{ position: 'relative', width: '240px', height: '420px', backgroundImage: `url(${silhouette})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }}>
-          {Object.entries(equipment).map(([part, item]) => {
-            const positionStyles = {
-              helmet: { top: '15px', left: '90px' },
-              armor: { top: '80px', left: '90px' },
-              weapon: { top: '80px', left: '10px' },
-              shield: { top: '80px', right: '10px' },
-              belt: { top: '150px', left: '90px' },
-              boots: { top: '220px', left: '90px' },
-              ring: { top: '150px', left: '10px' },
-              necklace: { top: '150px', right: '10px' },
-              gloves: { top: '270px', left: '10px' },
-              cloak: { top: '270px', right: '10px' },
-            };
-            const style = {
-              position: 'absolute',
-              width: '60px',
-              height: '60px',
-              backgroundColor: '#fff6',
-              border: '1px solid #aaa',
-              borderRadius: '8px',
-              fontSize: '12px',
-              color: item ? rarityColors[item.rarity] : '#999',
-              padding: '2px',
-              textAlign: 'center',
-              ...positionStyles[part],
-            };
-            return <div key={part} style={style}>{item ? item.name : part}</div>;
-          })}
+        <div style={{ position: 'relative', width: '200px', height: '400px', backgroundColor: '#eee', borderRadius: '10px' }}>
+          <div style={{ position: 'absolute', top: '10px', left: '80px' }}>{equipment.helmet?.name || '🪖'}</div>
+          <div style={{ position: 'absolute', top: '60px', left: '80px' }}>{equipment.armor?.name || '👕'}</div>
+          <div style={{ position: 'absolute', top: '60px', left: '10px' }}>{equipment.weapon?.name || '🗡'}</div>
+          <div style={{ position: 'absolute', top: '60px', right: '10px' }}>{equipment.shield?.name || '🛡'}</div>
+          <div style={{ position: 'absolute', top: '120px', left: '80px' }}>{equipment.belt?.name || '🧷'}</div>
+          <div style={{ position: 'absolute', top: '170px', left: '80px' }}>{equipment.boots?.name || '👞'}</div>
+          <div style={{ position: 'absolute', top: '120px', left: '10px' }}>{equipment.ring?.name || '💍'}</div>
+          <div style={{ position: 'absolute', top: '120px', right: '10px' }}>{equipment.necklace?.name || '📿'}</div>
+          <div style={{ position: 'absolute', top: '220px', left: '10px' }}>{equipment.gloves?.name || '🧤'}</div>
+          <div style={{ position: 'absolute', top: '220px', right: '10px' }}>{equipment.cloak?.name || '🧥'}</div>
         </div>
+
         <div style={{ marginTop: '1rem' }}>레벨 {level} | 💰 {gold}골드</div>
       </div>
     </div>
