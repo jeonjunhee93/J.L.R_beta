@@ -1,153 +1,81 @@
-import { useState } from 'react';
-import './index.css';
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import silhouette from "/src/silhouette.png"; // ✅ 실루엣 이미지 경로
 
-function LifeRPG() {
+export default function LifeRPG() {
   const [tasks, setTasks] = useState([]);
-  const [taskInput, setTaskInput] = useState('');
-  const [xp, setXp] = useState(0);
-  const [gold, setGold] = useState(0);
-  const [level, setLevel] = useState(1);
-  const [inventory, setInventory] = useState([]);
-  const [equipment, setEquipment] = useState({
-    weapon: null,
-    armor: null,
-    helmet: null,
-    gloves: null,
-    boots: null,
-    necklace: null,
-    ring: null,
-    cloak: null,
-    belt: null,
-    shield: null,
+  const [taskInput, setTaskInput] = useState("");
+  const [player, setPlayer] = useState({
+    level: 1,
+    xp: 0,
+    gold: 0,
+    inventory: [],
+    stats: {
+      strength: 5,
+      intelligence: 5,
+      luck: 5
+    },
+    equipment: {
+      helmet: null,
+      armor: null,
+      weapon: null,
+      shield: null,
+      gloves: null,
+      boots: null,
+      ring: null,
+      cloak: null,
+      belt: null,
+      accessory: null
+    }
   });
 
-  const rarityColors = {
-    common: 'gray',
-    normal: 'white',
-    rare: 'blue',
-    epic: 'purple',
-    legendary: 'red',
-  };
-
-  const generateRandomItem = () => {
-    const parts = Object.keys(equipment);
-    const part = parts[Math.floor(Math.random() * parts.length)];
-    const rarities = ['common', 'normal', 'rare', 'epic', 'legendary'];
-    const weights = [50, 30, 15, 4, 1];
-    const sum = weights.reduce((a, b) => a + b);
-    const rand = Math.random() * sum;
-    let acc = 0, rarity;
-    for (let i = 0; i < rarities.length; i++) {
-      acc += weights[i];
-      if (rand < acc) {
-        rarity = rarities[i];
-        break;
-      }
-    }
-    return {
-      name: `${rarity.toUpperCase()} ${part}`,
-      part,
-      rarity,
-    };
-  };
-
-  const handleAddTask = () => {
-    if (taskInput.trim() === '') return;
-    const newTask = { text: taskInput, completed: false };
-    setTasks([...tasks, newTask]);
-    setTaskInput('');
-  };
-
-  const handleComplete = (index) => {
-    const updated = [...tasks];
-    updated[index].completed = true;
-    setTasks(updated);
-    const rewardItem = generateRandomItem();
-    setInventory([...inventory, rewardItem]);
-
-    const newXp = xp + 10;
-    const newGold = gold + 5;
-    setXp(newXp);
-    setGold(newGold);
-    if (newXp >= level * 100) {
-      setLevel(level + 1);
-      setXp(newXp - level * 100);
-    }
-  };
-
-  const handleEquip = (item) => {
-    setEquipment({ ...equipment, [item.part]: item });
-    setInventory(inventory.filter((i) => i !== item));
-  };
-
-  const handleSell = (item) => {
-    setGold(gold + 10);
-    setInventory(inventory.filter((i) => i !== item));
-  };
-
-  const handleRestPurchase = (type) => {
-    const cost = 30;
-    if (gold >= cost) {
-      alert(`${type} 30분을 구매했습니다! 즐거운 시간 보내세요.`);
-      setGold(gold - cost);
-    } else {
-      alert('골드가 부족합니다.');
-    }
-  };
-
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-      <div style={{ marginRight: '2rem' }}>
-        <h2>📋 할 일</h2>
-        <input
-          value={taskInput}
-          onChange={(e) => setTaskInput(e.target.value)}
-          placeholder="할 일 입력"
+    <div className="p-6 max-w-6xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4">🧙 인생 RPG</h1>
+
+      {/* 실루엣 배경 + 장비창 */}
+      <div className="relative w-[300px] h-[500px] mx-auto bg-gray-100 rounded-lg overflow-hidden border shadow">
+        {/* 실루엣 이미지 */}
+        <img
+          src={silhouette}
+          alt="Silhouette"
+          className="absolute inset-0 w-full h-full object-contain opacity-30 z-0"
         />
-        <button onClick={handleAddTask}>추가</button>
-        <ul>
-          {tasks.map((task, i) => (
-            <li key={i}>
-              {task.text} {task.completed ? '✅' : <button onClick={() => handleComplete(i)}>완료</button>}
-            </li>
-          ))}
-        </ul>
 
-        <h2>🎒 인벤토리</h2>
-        <ul>
-          {inventory.map((item, i) => (
-            <li key={i}>
-              <span style={{ color: rarityColors[item.rarity] }}>{item.name}</span>
-              <button onClick={() => handleEquip(item)}>장착</button>
-              <button onClick={() => handleSell(item)}>판매</button>
-            </li>
-          ))}
-        </ul>
-
-        <h2>☕ 휴식</h2>
-        <button onClick={() => handleRestPurchase('유튜브 시청')}>유튜브 30분</button>
-        <button onClick={() => handleRestPurchase('게임 플레이')}>게임 30분</button>
-      </div>
-
-      <div>
-        <h2>🧍 장비창</h2>
-        <div style={{ position: 'relative', width: '200px', height: '400px', backgroundColor: '#eee', borderRadius: '10px' }}>
-          <div style={{ position: 'absolute', top: '10px', left: '80px' }}>{equipment.helmet?.name || '🪖'}</div>
-          <div style={{ position: 'absolute', top: '60px', left: '80px' }}>{equipment.armor?.name || '👕'}</div>
-          <div style={{ position: 'absolute', top: '60px', left: '10px' }}>{equipment.weapon?.name || '🗡'}</div>
-          <div style={{ position: 'absolute', top: '60px', right: '10px' }}>{equipment.shield?.name || '🛡'}</div>
-          <div style={{ position: 'absolute', top: '120px', left: '80px' }}>{equipment.belt?.name || '🧷'}</div>
-          <div style={{ position: 'absolute', top: '170px', left: '80px' }}>{equipment.boots?.name || '👞'}</div>
-          <div style={{ position: 'absolute', top: '120px', left: '10px' }}>{equipment.ring?.name || '💍'}</div>
-          <div style={{ position: 'absolute', top: '120px', right: '10px' }}>{equipment.necklace?.name || '📿'}</div>
-          <div style={{ position: 'absolute', top: '220px', left: '10px' }}>{equipment.gloves?.name || '🧤'}</div>
-          <div style={{ position: 'absolute', top: '220px', right: '10px' }}>{equipment.cloak?.name || '🧥'}</div>
+        {/* 장비 슬롯들 */}
+        <div className="absolute top-4 left-[50%] translate-x-[-50%] z-10">
+          🎩 {player.equipment.helmet || "머리"}
         </div>
-
-        <div style={{ marginTop: '1rem' }}>레벨 {level} | 💰 {gold}골드</div>
+        <div className="absolute top-20 left-[50%] translate-x-[-50%] z-10">
+          🛡 {player.equipment.armor || "몸통"}
+        </div>
+        <div className="absolute top-36 left-[15%] z-10">
+          🗡 {player.equipment.weapon || "무기"}
+        </div>
+        <div className="absolute top-36 right-[15%] z-10">
+          🛡 {player.equipment.shield || "방패"}
+        </div>
+        <div className="absolute bottom-36 left-[20%] z-10">
+          🧤 {player.equipment.gloves || "장갑"}
+        </div>
+        <div className="absolute bottom-36 right-[20%] z-10">
+          👞 {player.equipment.boots || "신발"}
+        </div>
+        <div className="absolute bottom-24 left-[50%] translate-x-[-50%] z-10">
+          🔗 {player.equipment.belt || "허리"}
+        </div>
+        <div className="absolute bottom-16 left-[30%] z-10">
+          💍 {player.equipment.ring || "반지"}
+        </div>
+        <div className="absolute bottom-16 right-[30%] z-10">
+          🧿 {player.equipment.accessory || "장신구"}
+        </div>
+        <div className="absolute bottom-6 left-[50%] translate-x-[-50%] z-10">
+          🧥 {player.equipment.cloak || "망토"}
+        </div>
       </div>
     </div>
   );
 }
-
-export default LifeRPG;
